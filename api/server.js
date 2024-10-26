@@ -3,7 +3,7 @@ import axios from "axios";
 import { load } from "cheerio";
 
 const app = express();
-const PORT = 3000;
+// const PORT = 3000;
 
 // Define your getId function here
 const getId = async (req, res) => {
@@ -123,15 +123,16 @@ const main = async (req, res) => {
 };
 
 // Define an endpoint to call the getId function
+
+app.get("/api", (req, res) => res.send("API"));
+
 app.get("/api/getId", getId);
 
 app.get("/api/getStream", main);
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Server is running on http://localhost:${PORT}`);
+// });
 
-// export default app;  // Export the app for Vercel
-
-module.exports = app;
+export default app;  // Export the app for Vercel
