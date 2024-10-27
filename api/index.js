@@ -3,37 +3,48 @@ import axios from "axios";
 import { load } from "cheerio";
 
 const app = express();
-// const PORT = 3000;
+const PORT = 3000;
 
 // Define your getId function here
 const getId = async (req, res) => {
   const { q, year, type } = req.query;
 
   try {
+    console.log("Starting request with query:", { q, year, type });
+
     const resp = await axios.get(
       "https://hdrezka.me/search/?do=search&subaction=search&q=" + q
     );
+    console.log("Request successful. Status:", resp.status);
 
     const $ = load(resp.data);
+    console.log("HTML successfully loaded with cheerio.");
+
     const id = $(".b-content__inline_item")
-      .map((_, e) =>
-        $(e)
-          .find(".b-content__inline_item-link > div")
-          .text()
-          .split(",")
-          .shift()
-          .includes(year) && $(e).find(".entity").text() === type
-          ? $(e).attr("data-id")
-          : undefined
-      )
+      .map((_, e) => {
+        const text = $(e).find(".b-content__inline_item-link > div").text();
+        console.log("Item text:", text);
+
+        const yearMatch = text.split(",").shift().includes(year);
+        console.log("Year match:", yearMatch);
+
+        const typeMatch = $(e).find(".entity").text() === type;
+        console.log("Type match:", typeMatch);
+
+        return yearMatch && typeMatch ? $(e).attr("data-id") : undefined;
+      })
       .get()
       .filter(Boolean);
 
+    console.log("IDs extracted:", id);
+
     res.json({ id });
   } catch (error) {
+    console.error("Error occurred:", error.message);
     res.status(500).json({ error: "Failed to fetch ID." });
   }
 };
+
 
 
 // Utility to decode data
@@ -131,8 +142,8 @@ app.get("/api/getId", getId);
 app.get("/api/getStream", main);
 
 // Start the server
-// app.listen(PORT, () => {
-//   console.log(`Server is running on http://localhost:${PORT}`);
-// });
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
 
-export default app;  // Export the app for Vercel
+// export default app;  // Export the app for Vercel
