@@ -5,6 +5,8 @@ import { load } from "cheerio";
 const app = express();
 // const PORT = 3000;
 
+// const PORT = process.env.PORT || 3000;
+
 // Define your getId function here
 const getId = async (req, res) => {
   const { q, year, type } = req.query;
@@ -135,4 +137,5 @@ app.get("/api/getStream", main);
 //   console.log(`Server is running on http://localhost:${PORT}`);
 // });
 
-export default app;  // Export the app for Vercel
+
+export default app;
