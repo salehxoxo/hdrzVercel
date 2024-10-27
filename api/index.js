@@ -7,7 +7,9 @@ const PORT = 3000;
 
 // Define your getId function here
 const getId = async (req, res) => {
-  const { q, year, type } = req.query;
+  const { q, year } = req.query;
+  const type = decodeURIComponent(req.query.type);
+
 
   try {
     console.log("Starting request with query:", { q, year, type });
