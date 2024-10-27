@@ -3,19 +3,20 @@ import axios from "axios";
 import { load } from "cheerio";
 
 const app = express();
-// const PORT = 3000;
+const PORT = 3000;
 
 // Define your getId function here
-const getId = (req, res) => {
+const getId = async (req, res) => {
   const { q, year, type } = req.query;
 
   // try {
     console.log("Starting request with query:", { q, year, type });
 
-    const resp = axios.get(
+    const resp = await axios.get(
       "https://hdrezka.me/search/?do=search&subaction=search&q=" + q
     );
     console.log("Request successful. Status:", resp.status);
+    console.log("Request:", resp);
 
 //     const $ = load(resp.data);
 //     console.log("HTML successfully loaded with cheerio.");
@@ -142,8 +143,8 @@ app.get("/api/getId", getId);
 app.get("/api/getStream", main);
 
 // Start the server
-// app.listen(PORT, () => {
-//   console.log(`Server is running on http://localhost:${PORT}`);
-// });
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
 
-export default app;  // Export the app for Vercel
+// export default app;  // Export the app for Vercel
