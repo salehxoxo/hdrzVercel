@@ -43,7 +43,7 @@ const getId = (req, res) => {
 //     console.error("Error occurred:", error.message);
 //     res.status(500).json({ error: "Failed to fetch ID." });
 //   }
-// };
+};
 
 
 
@@ -87,7 +87,7 @@ const getId = (req, res) => {
 //       m[key.replace("[", "")] = value;
 //       return m;
 //     }, {});
-  };
+  // };
 
 
 
