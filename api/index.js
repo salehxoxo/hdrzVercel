@@ -9,86 +9,74 @@ const app = express();
 const getId = async (req, res) => {
   const { q, year, type } = req.query;
 
-  // try {
-    console.log("Starting request with query:", { q, year, type });
-
+  try {
     const resp = await axios.get(
       "https://hdrezka.me/search/?do=search&subaction=search&q=" + q
     );
-    console.log("Request successful. Status:", resp.status);
-    console.log("Request:", resp);
 
-//     const $ = load(resp.data);
-//     console.log("HTML successfully loaded with cheerio.");
+    const $ = load(resp.data);
+    const id = $(".b-content__inline_item")
+      .map((_, e) =>
+        $(e)
+          .find(".b-content__inline_item-link > div")
+          .text()
+          .split(",")
+          .shift()
+          .includes(year) && $(e).find(".entity").text() === type
+          ? $(e).attr("data-id")
+          : undefined
+      )
+      .get()
+      .filter(Boolean);
 
-//     const id = $(".b-content__inline_item")
-//       .map((_, e) => {
-//         const text = $(e).find(".b-content__inline_item-link > div").text();
-//         console.log("Item text:", text);
-
-//         const yearMatch = text.split(",").shift().includes(year);
-//         console.log("Year match:", yearMatch);
-
-//         const typeMatch = $(e).find(".entity").text() === type;
-//         console.log("Type match:", typeMatch);
-
-//         return yearMatch && typeMatch ? $(e).attr("data-id") : undefined;
-//       })
-//       .get()
-//       .filter(Boolean);
-
-//     console.log("IDs extracted:", id);
-
-//     res.json({ id });
-//   } catch (error) {
-//     console.error("Error occurred:", error.message);
-//     res.status(500).json({ error: "Failed to fetch ID." });
-//   }
+    res.json({ id });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch ID." });
+  }
 };
 
 
-
-// // Utility to decode data
-// const getData = (x) => {
-//     const v = {
-//       file3_separator: "//_//",
-//       bk0: "$$#!!@#!@##",
-//       bk1: "^^^!@##!!##",
-//       bk2: "####^!!##!@@",
-//       bk3: "@@@@@!##!^^^",
-//       bk4: "$$!!@$$@^!@#$$@",
-//     };
-//     let a = x.substr(2);
-//     for (let i = 4; i >= 0; i--) {
-//       if (v["bk" + i]) {
-//         a = a.replace(
-//           v.file3_separator +
-//             btoa(
-//               encodeURIComponent(v["bk" + i]).replace(
-//                 /%([0-9A-F]{2})/g,
-//                 (_, p1) => String.fromCharCode("0x" + p1)
-//               )
-//             ),
-//           ""
-//         );
-//       }
-//     }
-//     try {
-//       a = decodeURIComponent(
-//         atob(a)
-//           .split("")
-//           .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-//           .join("")
-//       );
-//     } catch (e) {
-//       a = "";
-//     }
-//     return a.split(",").reduce((m, ele) => {
-//       const [key, value] = ele.split("]");
-//       m[key.replace("[", "")] = value;
-//       return m;
-//     }, {});
-  // };
+// Utility to decode data
+const getData = (x) => {
+    const v = {
+      file3_separator: "//_//",
+      bk0: "$$#!!@#!@##",
+      bk1: "^^^!@##!!##",
+      bk2: "####^!!##!@@",
+      bk3: "@@@@@!##!^^^",
+      bk4: "$$!!@$$@^!@#$$@",
+    };
+    let a = x.substr(2);
+    for (let i = 4; i >= 0; i--) {
+      if (v["bk" + i]) {
+        a = a.replace(
+          v.file3_separator +
+            btoa(
+              encodeURIComponent(v["bk" + i]).replace(
+                /%([0-9A-F]{2})/g,
+                (_, p1) => String.fromCharCode("0x" + p1)
+              )
+            ),
+          ""
+        );
+      }
+    }
+    try {
+      a = decodeURIComponent(
+        atob(a)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      );
+    } catch (e) {
+      a = "";
+    }
+    return a.split(",").reduce((m, ele) => {
+      const [key, value] = ele.split("]");
+      m[key.replace("[", "")] = value;
+      return m;
+    }, {});
+  };
 
 
 
