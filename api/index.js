@@ -11,7 +11,13 @@ const getId = async (req, res) => {
 
   try {
     const response = await fetch(
-      "https://hdrezka.me/search/?do=search&subaction=search&q=" + q
+      "https://hdrezka.me/search/?do=search&subaction=search&q=" + q,
+      {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36",
+        },
+      }
     );
     const html = await response.text();
     const $ = load(html);
