@@ -20,8 +20,9 @@ const getId = async (req, res) => {
       }
     );
     const html = await response.text();
+    console.log(html);
     const $ = load(html);
-    console.log($);
+    // console.log($);
 
     const id = $(".b-content__inline_item")
       .map((_, e) =>
