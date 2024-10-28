@@ -6,6 +6,11 @@ const app = express();
 
 // const PORT = process.env.PORT || 3000;
 // Define your getId function here
+
+import fs from "fs";
+import fetch from "node-fetch";
+
+
 const getId = async (req, res) => {
   const { q, year, type } = req.query;
 
@@ -20,9 +25,17 @@ const getId = async (req, res) => {
       }
     );
     const html = await response.text();
-    console.log(html);
+
+    // Write the HTML response to a file
+    fs.writeFile("response.html", html, (err) => {
+      if (err) {
+        console.error("Error saving HTML response:", err);
+      } else {
+        console.log("HTML response saved to response.html");
+      }
+    });
+
     const $ = load(html);
-    // console.log($);
 
     const id = $(".b-content__inline_item")
       .map((_, e) =>
@@ -43,6 +56,7 @@ const getId = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch ID." });
   }
 };
+
 
 // Utility to decode data
 const getData = (x) => {
