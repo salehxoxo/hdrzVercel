@@ -2,7 +2,7 @@ import express from "express";
 import { load } from "cheerio";
 
 const app = express();
-// const PORT = 3000;
+const PORT = 3000;
 
 // const PORT = process.env.PORT || 3000;
 // Define your getId function here
@@ -16,7 +16,7 @@ const getId = async (req, res) => {
 
   try {
     const response = await fetch(
-      "https://hdrezka.me/search/?do=search&subaction=search&q=" + q,
+      `https://hdrezka.me/search/?do=search&subaction=search&q=${q}`,
       {
         headers: {
           "User-Agent":
@@ -24,39 +24,34 @@ const getId = async (req, res) => {
         },
       }
     );
+
     const html = await response.text();
 
-    // Write the HTML response to a file
-    fs.writeFile("response.html", html, (err) => {
-      if (err) {
-        console.error("Error saving HTML response:", err);
-      } else {
-        console.log("HTML response saved to response.html");
-      }
-    });
+    // If you want to process the HTML, you can do so here
+    // const $ = load(html);
 
-    const $ = load(html);
+    // // Optionally, you can extract IDs if needed
+    // const id = $(".b-content__inline_item")
+    //   .map((_, e) =>
+    //     $(e)
+    //       .find(".b-content__inline_item-link > div")
+    //       .text()
+    //       .split(",")
+    //       .shift()
+    //       .includes(year) && $(e).find(".entity").text() === type
+    //       ? $(e).attr("data-id")
+    //       : undefined
+    //   )
+    //   .get()
+    //   .filter(Boolean);
 
-    const id = $(".b-content__inline_item")
-      .map((_, e) =>
-        $(e)
-          .find(".b-content__inline_item-link > div")
-          .text()
-          .split(",")
-          .shift()
-          .includes(year) && $(e).find(".entity").text() === type
-          ? $(e).attr("data-id")
-          : undefined
-      )
-      .get()
-      .filter(Boolean);
-
-    res.json({ id });
+    // Render the full HTML response to the client
+    res.setHeader('Content-Type', 'text/html');
+    res.send(html);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch ID." });
   }
 };
-
 
 // Utility to decode data
 const getData = (x) => {
@@ -146,8 +141,8 @@ app.get("/api/getId", getId);
 app.get("/api/getStream", main);
 
 //Start the server
-// app.listen(PORT, () => {
-//   console.log(`Server is running on http://localhost:${PORT}`);
-// });
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
 
-export default app;
+// export default app;
