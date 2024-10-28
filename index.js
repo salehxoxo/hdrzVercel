@@ -5,7 +5,7 @@ import { load } from "cheerio";
 const app = express();
 // const PORT = 3000;
 
-const PORT = process.env.PORT || 3000;
+// const PORT = process.env.PORT || 3000;
 
 // Define your getId function here
 const getId = async (req, res) => {
